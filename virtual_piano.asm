@@ -155,11 +155,11 @@ process_input:
 	call exit
 
 .err:
-	xor al, al
+	xor bh, bh
 	ret
 
 .safe:
-	mov al, 0
+	mov bh, 1
 
 ;--------------------------------------------------
 ; Stops execution of the program
