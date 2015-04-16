@@ -19,6 +19,7 @@
 
 start:
 	call setup_midi
+	mov ch, 60;				default octave(0)
 
 .loop:
 	call read_character
@@ -34,13 +35,15 @@ start:
 ;--------------------------------------------------
 ; Plays a note
 ;
-; IN: AL = pitch
+; IN: AL, CH = pitch, (octave * 12) + 60
 ; OUT: NONE
 ; ERR: NONE
 ; REG: AL
 
 play_note:
 	out dx, al;				DX will already contain MIDI_DATA_PORT from the setup_midi function
+
+	add al, ch;				apply octave change
 
 	mov al, 7Fh;			note duration
 	out dx, al
@@ -51,7 +54,7 @@ play_note:
 ; Based on input, returns a pitch to be played
 ;
 ; IN: AH, AL = scan code, key code
-; OUT: AL = pitch
+; OUT: AL, CH = pitch, (octave * 12) + 60
 ; ERR: NONE
 ; REG: preserved
 
@@ -73,22 +76,33 @@ get_pitch:
 	cmp al, ';'
 	je .sc
 
-.a: mov al, 60
+	cmp ah, PAGEUP
+	je .pu
+	cmp ah, PAGEDOWN
+	je .pd
+
+.a: mov al, 0
 	jmp .end
-.s: mov al, 62
+.s: mov al, 2
 	jmp .end
-.d: mov al, 64
+.d: mov al, 4
 	jmp .end
-.f: mov al, 65
+.f: mov al, 5
 	jmp .end
-.j: mov al, 67
+.j: mov al, 7
 	jmp .end
-.k: mov al, 69
+.k: mov al, 9
 	jmp .end
-.l: mov al, 71
+.l: mov al, 11
 	jmp .end
-.sc: mov al, 72
+.sc: mov al, 12
 	jmp .end
+
+.pu: add ch, 12
+	jmp .end
+.pd: sub ch, 12
+	jmp .end
+
 
 .end:
 	ret
