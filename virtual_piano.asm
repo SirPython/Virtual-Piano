@@ -8,8 +8,6 @@
 ; virtual_piano.asm
 ;===============================================================================
 
-%define PAGEUP 49h
-%define PAGEDOWN 51h
 %define ESC 1Bh
 
 %define MIDI_CONTROL_PORT 0331h
@@ -48,6 +46,12 @@ play_note:
 	mov al, 7Fh;			note duration
 	out dx, al
 
+	pusha
+	mov ah, 0Eh
+	mov al, ch
+	int 10h
+	popa
+
 	ret
 
 ;--------------------------------------------------
@@ -76,10 +80,10 @@ get_pitch:
 	cmp al, ';'
 	je .sc
 
-	cmp ah, PAGEUP
-	je .pu
-	cmp ah, PAGEDOWN
-	je .pd
+	cmp ah, 'z'
+	je .z
+	cmp ah, 'x'
+	je .x
 
 .a: mov al, 0
 	jmp .end
@@ -98,9 +102,9 @@ get_pitch:
 .sc: mov al, 12
 	jmp .end
 
-.pu: add ch, 12
+.z: add ch, 12
 	jmp .end
-.pd: sub ch, 12
+.x: sub ch, 12
 	jmp .end
 
 
