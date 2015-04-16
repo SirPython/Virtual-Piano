@@ -7,7 +7,6 @@
 ;
 ; virtual_piano.asm
 ;===============================================================================
-jmp start
 
 %define PAGEUP 49h
 %define PAGEDOWN 51h
@@ -17,8 +16,6 @@ jmp start
 %define MIDI_DATA_PORT 0330h
 %define MIDI_UART_MODE 3Fh
 %define MIDI_PIANO_INSTRUMENT 93h
-
-notes db 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72
 
 start:
 	call setup_midi
@@ -76,21 +73,21 @@ get_pitch:
 	cmp al, ';'
 	je .sc
 
-.a: mov al, byte [notes + 0]
+.a: mov al, 60
 	jmp .end
-.s: mov al, byte [notes + 2]
+.s: mov al, 62
 	jmp .end
-.d: mov al, byte [notes + 4]
+.d: mov al, 64
 	jmp .end
-.f: mov al, byte [notes + 5]
+.f: mov al, 65
 	jmp .end
-.j: mov al, byte [notes + 7]
+.j: mov al, 67
 	jmp .end
-.k: mov al, byte [notes + 9]
+.k: mov al, 69
 	jmp .end
-.l: mov al, byte [notes + 71]
+.l: mov al, 71
 	jmp .end
-.sc: mov al, byte [notes + 72]
+.sc: mov al, 72
 	jmp .end
 
 .end:
