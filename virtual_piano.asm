@@ -134,10 +134,10 @@ setup_midi:
 	ret
 
 ;--------------------------------------------------
-; Checks to make sure that input was on the homerow
+; Checks to make sure that input is acceptable
 ;
 ; IN: AH, AL = scan code, key code
-; OUT: BH = 1 (on the homerow) or 0 (not on the homerow)
+; OUT: BH = 1 (accpetable) or 0 (not acceptable)
 ; ERR: NONE
 ; REG: preserved
 
@@ -161,10 +161,10 @@ process_input:
 	cmp al, ';'
 	je .safe
 
-.check_scan_code:
-	cmp ah, PAGEUP
+.check_octave_code:
+	cmp al, 'z'
 	je .safe
-	cmp ah, PAGEDOWN
+	cmp al, 'x'
 	je .safe
 
 .is_exit:
