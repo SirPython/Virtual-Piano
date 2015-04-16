@@ -103,7 +103,7 @@ get_pitch:
 ; REG: DX
 
 setup_midi:
-	push al
+	push ax
 
 	mov dx, MIDI_CONTROL_PORT
 	mov al, MIDI_UART_MODE;	play notes as soon as they are recieved
@@ -113,7 +113,7 @@ setup_midi:
 	mov al, MIDI_PIANO_INSTRUMENT
 	out dx, al
 
-	pop al
+	pop ax
 	ret
 
 ;--------------------------------------------------
