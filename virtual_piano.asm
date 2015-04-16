@@ -18,6 +18,8 @@ jmp start
 %define MIDI_UART_MODE 3Fh
 %define MIDI_PIANO_INSTRUMENT 93h
 
+notes db 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72
+
 start:
 	call setup_midi
 
@@ -74,21 +76,21 @@ get_pitch:
 	cmp al, ';'
 	je .sc
 
-.a: mov al, 60
+.a: mov al, byte [notes + 0]
 	jmp .end
-.s: mov al, 62
+.s: mov al, byte [notes + 2]
 	jmp .end
-.d: mov al, 64
+.d: mov al, byte [notes + 4]
 	jmp .end
-.f: mov al, 65
+.f: mov al, byte [notes + 5]
 	jmp .end
-.j: mov al, 67
+.j: mov al, byte [notes + 7]
 	jmp .end
-.k: mov al, 69
+.k: mov al, byte [notes + 9]
 	jmp .end
-.l: mov al, 71
+.l: mov al, byte [notes + 71]
 	jmp .end
-.sc: mov al, 72
+.sc: mov al, byte [notes + 72]
 	jmp .end
 
 .end:
