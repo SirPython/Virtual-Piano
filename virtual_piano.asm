@@ -1,7 +1,7 @@
 ; Concerns:
 ; - those crazy 'switch' statements
 ; - register use
-
+; - are the right subroutines doing their own jobs, and not another's?
 
 ; To work on:
 ; - stop user from going too low or too high; it breaks the program
@@ -22,15 +22,22 @@
 start:
 	call setup_midi
 	mov ch, 60;				default octave(0)
-
+	mov cl, 5;				used for making sure that the user does not go too low or too high with the octaves
 .loop:
 	call read_character
 	call process_input
 
-	cmp bh, 0;				if bad input
+	cmp bh, 0;				if bad input OR octave change goes out of range
 	je .loop
 
 	call get_pitch
+
+	pusha
+	mov ah, 0Eh
+	mov al, cl
+	add al, '0'
+	int 10h
+	popa
 
 	cmp bh, 2;				if shouldn't play note (was an octave switch)
 	je .loop
@@ -59,7 +66,7 @@ play_note:
 ; Based on input, returns a pitch to be played
 ;
 ; IN: AH, AL = scan code, key code
-; OUT: AL, CH = pitch OR 0 if no pitch, (octave * 12) + 60
+; OUT: AL, CH = pitch, (octave * 12) + 60
 ; ERR: BH = 2, no pitch to be played
 ; REG: preserved
 
@@ -170,7 +177,7 @@ setup_midi:
 ; Checks to make sure that input is acceptable
 ;
 ; IN: AH, AL = scan code, key code
-; OUT: BH = 1 (accpetable) or 0 (not acceptable)
+; OUT: BH = 1 (accpetable) or 0 (not acceptable, or octave is trying to change too low)
 ; ERR: NONE
 ; REG: preserved
 
@@ -211,17 +218,27 @@ process_input:
 
 .check_octave_code:
 	cmp al, 'z'
-	je .safe
+	je .z
 	cmp al, 'x'
-	je .safe
+	je .x
 
-.is_exit:
-	cmp al, ESC
-	call exit
+	jmp .err;				none of the keys pressed were valid keys
+
+.z:
+	cmp cl, 12;				if user is about to go out of octave range, then drop down to error
+	jne .safe
+
+.x:
+	cmp cl, 1
+	jne .safe
 
 .err:
 	xor bh, bh
 	ret
+
+.is_exit:
+	cmp al, ESC
+	call exit
 
 .safe:
 	mov bh, 1
