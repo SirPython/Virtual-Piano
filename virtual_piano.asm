@@ -141,9 +141,11 @@ get_pitch:
 	jmp .end
 
 .z: add ch, 12
+	add cl, 1
 	mov bh, 2
 	jmp .end
 .x: sub ch, 12
+	sub cl, 1
 	mov bh, 2
 	jmp .end
 
@@ -225,7 +227,7 @@ process_input:
 	jmp .err;				none of the keys pressed were valid keys
 
 .z:
-	cmp cl, 12;				if user is about to go out of octave range, then drop down to error
+	cmp cl, 10;				if user is about to go out of octave range, then drop down to error
 	jne .safe
 
 .x:
