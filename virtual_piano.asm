@@ -1,6 +1,10 @@
 ; Concerns:
 ; - those crazy 'switch' statements
 ; - register use
+
+
+; To work on:
+; - stop user from going too low or too high; it breaks the program
 ;===============================================================================
 ; Virtual Piano -- a virtual and playable piano
 ; By SirPython of Code Review and GitHub
@@ -77,6 +81,21 @@ get_pitch:
 	cmp al, ';'
 	je .sc
 
+	cmp al, 'w'
+	je .w
+	cmp al, 'e'
+	je .e
+	cmp al, 'r'
+	je .r
+	cmp al, 't'
+	je .t
+	cmp al, 'i'
+	je .i
+	cmp al, 'o'
+	je .o
+	cmp al, 'p'
+	je .p
+
 	cmp al, 'z'
 	je .z
 	cmp al, 'x'
@@ -97,6 +116,21 @@ get_pitch:
 .l: mov al, 11
 	jmp .end
 .sc: mov al, 12
+	jmp .end
+
+.w: mov al, 1
+	jmp .end
+.e: mov al, 3
+	jmp .end
+.r: jmp .f
+	jmp .end
+.t: mov al, 6
+	jmp .end
+.i: mov al, 8
+	jmp .end
+.o: mov al, 10
+	jmp .end
+.p: jmp .l
 	jmp .end
 
 .z: add ch, 12
@@ -158,6 +192,21 @@ process_input:
 	cmp al, 'l'
 	je .safe
 	cmp al, ';'
+	je .safe
+
+	cmp al, 'w'
+	je .safe
+	cmp al, 'e'
+	je .safe
+	cmp al, 'r'
+	je .safe
+	cmp al, 't'
+	je .safe
+	cmp al, 'i'
+	je .safe
+	cmp al, 'o'
+	je .safe
+	cmp al, 'p'
 	je .safe
 
 .check_octave_code:
