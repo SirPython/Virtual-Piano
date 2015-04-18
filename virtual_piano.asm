@@ -23,10 +23,14 @@ start:
 	call read_character
 	call process_input
 
-	cmp bh, 0
+	cmp bh, 0;				if bad input
 	je .loop
 
 	call get_pitch
+
+	cmp bh, 2;				if shouldn't play note (was an octave switch)
+	je .loop
+
 	call play_note
 	
 	jmp .loop
@@ -39,18 +43,11 @@ start:
 ; REG: AL
 
 play_note:
+	add al, ch;				apply the octave
 	out dx, al;				DX will already contain MIDI_DATA_PORT from the setup_midi function
-
-	add al, ch;				apply octave change
 
 	mov al, 7Fh;			note duration
 	out dx, al
-
-	pusha
-	mov ah, 0Eh
-	mov al, ch
-	int 10h
-	popa
 
 	ret
 
@@ -58,8 +55,8 @@ play_note:
 ; Based on input, returns a pitch to be played
 ;
 ; IN: AH, AL = scan code, key code
-; OUT: AL, CH = pitch, (octave * 12) + 60
-; ERR: NONE
+; OUT: AL, CH = pitch OR 0 if no pitch, (octave * 12) + 60
+; ERR: BH = 2, no pitch to be played
 ; REG: preserved
 
 get_pitch:
@@ -80,9 +77,9 @@ get_pitch:
 	cmp al, ';'
 	je .sc
 
-	cmp ah, 'z'
+	cmp al, 'z'
 	je .z
-	cmp ah, 'x'
+	cmp al, 'x'
 	je .x
 
 .a: mov al, 0
@@ -103,8 +100,10 @@ get_pitch:
 	jmp .end
 
 .z: add ch, 12
+	mov bh, 2
 	jmp .end
 .x: sub ch, 12
+	mov bh, 2
 	jmp .end
 
 
